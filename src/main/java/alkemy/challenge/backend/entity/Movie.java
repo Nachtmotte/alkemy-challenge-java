@@ -34,12 +34,7 @@ public class Movie {
     @Column(columnDefinition="SMALLINT")
     private Integer rating;
 
-    @ManyToMany
-    @JoinTable(
-            name = "movie_character",
-            joinColumns = @JoinColumn(name = "movie_id"),
-            inverseJoinColumns = @JoinColumn(name = "character_id")
-    )
+    @ManyToMany(mappedBy = "movies")
     private List<Character> characters = new ArrayList<>();
 
     @ManyToMany
