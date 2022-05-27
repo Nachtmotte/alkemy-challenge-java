@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  disneyworlddb:
+    image: postgres
+    container_name: disneyworlddb
+    ports:
+      - ${DB_PORT:-5432:5432}
+    environment:
+      POSTGRES_USER: ${DB_USER:-root}
+      POSTGRES_PASSWORD: ${DB_PASS:-root}
+      POSTGRES_DB: ${DB_NAME:-disneyworlddb}

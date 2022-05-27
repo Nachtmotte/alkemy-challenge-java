@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -33,8 +34,13 @@ public class Movie {
     @Column(columnDefinition="SMALLINT")
     private Integer rating;
 
-    @ManyToMany(mappedBy = "movies")
-    private List<Character> characters;
+    @ManyToMany
+    @JoinTable(
+            name = "movie_character",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "character_id")
+    )
+    private List<Character> characters = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -42,5 +48,5 @@ public class Movie {
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
-    private List<Genre> genres;
+    private List<Genre> genres = new ArrayList<>();
 }

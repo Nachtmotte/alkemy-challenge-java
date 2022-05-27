@@ -3,6 +3,7 @@ package alkemy.challenge.backend.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -33,11 +34,6 @@ public class Character {
     @Column(columnDefinition="TEXT")
     private String story;
 
-    @ManyToMany
-    @JoinTable(
-            name = "character_movie",
-            joinColumns = @JoinColumn(name = "character_id"),
-            inverseJoinColumns = @JoinColumn(name = "movie_id")
-    )
-    private List<Movie> movies;
+    @ManyToMany(mappedBy = "characters")
+    private List<Movie> movies = new ArrayList<>();
 }

@@ -3,6 +3,7 @@ package alkemy.challenge.backend.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,5 +28,5 @@ public class Genre {
     private String imageUrl;
 
     @ManyToMany(mappedBy = "genres")
-    private List<Movie> movies;
+    private List<Movie> movies = new ArrayList<>();
 }
