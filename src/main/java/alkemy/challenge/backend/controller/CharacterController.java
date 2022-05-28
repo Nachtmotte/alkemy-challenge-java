@@ -26,6 +26,19 @@ public class CharacterController {
 
     private final ModelMapper mapper;
 
+    @GetMapping("/{characterId}")
+    public ResponseEntity<Map<String, Object>> getCharacter(@PathVariable("characterId") Long characterId) {
+
+        Character character;
+        try {
+            character = characterService.get(characterId);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND, "message", e.getMessage());
+        }
+
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "character", character);
+    }
+
     @GetMapping
     public ResponseEntity<Map<String, Object>> getCharacters() {
 

@@ -16,6 +16,11 @@ public class CharacterService {
 
     private final CharacterRepository characterRepo;
 
+    public Character get(Long characterId) {
+        return characterRepo.findById(characterId)
+                .orElseThrow(() -> new IllegalArgumentException("Character with id " + characterId + " does no exist"));
+    }
+
     public List<Character> getAll() {
         return characterRepo.findAll();
     }
@@ -24,10 +29,10 @@ public class CharacterService {
         return characterRepo.save(character);
     }
 
-    public void delete(Long characterId){
+    public void delete(Long characterId) {
         try {
             characterRepo.deleteById(characterId);
-        }catch (EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("Character with id " + characterId + " does no exist");
         }
     }

@@ -70,6 +70,25 @@ public class CharacterControllerIntegrationTest extends ContainersEnvironment {
     //              Test for GET CHARACTER
     // -----------------------------------------------------
     @Test
+    public void givenValidCharacterId_whenGetRequest_thenShouldResponseOkWithTheCharacter() throws Exception {
+        ResultActions result = mockMvc.perform(get("/characters/" + testCharacter.getId()));
+
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$.character.name", is(testCharacter.getName())));
+        result.andExpect(jsonPath("$.character.imageUrl", is(testCharacter.getImageUrl())));
+        result.andExpect(jsonPath("$.character.age", is(testCharacter.getAge())));
+        result.andExpect(jsonPath("$.character.weight", is(testCharacter.getWeight())));
+        result.andExpect(jsonPath("$.character.story", is(testCharacter.getStory())));
+    }
+
+    @Test
+    public void givenInvalidCharacterId_whenGetRequest_thenShouldResponseNotFound() throws Exception {
+        ResultActions result = mockMvc.perform(get("/characters/" + (testCharacter.getId() + 1)));
+
+        result.andExpect(status().isNotFound());
+    }
+
+    @Test
     public void givenAValidPersistedCharacter_whenGetRequest_thenShouldResponseOkWithAListWithOneCharacter() throws Exception {
         ResultActions result = mockMvc.perform(get("/characters"));
 
