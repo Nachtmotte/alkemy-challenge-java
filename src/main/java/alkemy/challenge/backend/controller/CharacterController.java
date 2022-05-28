@@ -29,7 +29,7 @@ public class CharacterController {
     @GetMapping
     public ResponseEntity<Map<String, Object>> getCharacters() {
 
-        List<Character> characters = characterService.getCharacters();
+        List<Character> characters = characterService.getAll();
         List<CharacterGetDetailedDto> charactersDto =
                 mapper.map(characters, new TypeToken<List<CharacterGetDetailedDto>>() {
                 }.getType());
@@ -46,5 +46,30 @@ public class CharacterController {
         CharacterGetDetailedDto characterDto = mapper.map(newCharacter, CharacterGetDetailedDto.class);
 
         return ResponseEntityUtil.generateResponse(HttpStatus.CREATED, "character", characterDto);
+    }
+
+    @DeleteMapping("/{characterId}")
+    public ResponseEntity<Map<String, Object>> deleteCharacter(@PathVariable("characterId") Long characterId) {
+        try {
+            characterService.delete(characterId);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND, "message", e.getMessage());
+        }
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "", null);
+    }
+
+    @PatchMapping("/{characterId}")
+    public ResponseEntity<Map<String, Object>> updateCharacter(
+            @PathVariable("characterId") Long characterId,
+            @RequestBody Character newCharacterData) {
+        try {
+            newCharacterData = characterService.update(characterId, newCharacterData);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND, "message", e.getMessage());
+        } catch (IllegalStateException e) {
+            return ResponseEntityUtil.generateResponse(HttpStatus.BAD_REQUEST, "message", e.getMessage());
+        }
+        CharacterGetDetailedDto characterDto = mapper.map(newCharacterData, CharacterGetDetailedDto.class);
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "character", characterDto);
     }
 }

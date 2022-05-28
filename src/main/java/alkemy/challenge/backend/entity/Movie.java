@@ -45,4 +45,11 @@ public class Movie {
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     private List<Genre> genres = new ArrayList<>();
+
+    @PreRemove
+    private void removeMovieFromCharacters(){
+        for(Character c : characters){
+            c.getMovies().remove(this);
+        }
+    }
 }

@@ -2,7 +2,7 @@ package alkemy.challenge.backend.dto.character;
 
 import lombok.Data;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
 
 @Data
 public class CharacterPostDto {
