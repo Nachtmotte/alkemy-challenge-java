@@ -21,8 +21,14 @@ public class CharacterService {
                 .orElseThrow(() -> new IllegalArgumentException("Character with id " + characterId + " does no exist"));
     }
 
-    public List<Character> getAll() {
-        return characterRepo.findAll();
+    public List<Character> getAll(String name, Integer age, Integer weight, Long movieId) {
+        if(name == null && age == null && weight == null && movieId == null){
+            return characterRepo.findAll();
+        }
+        if(movieId != null){
+            return characterRepo.findAllWithFilters(name, age, weight, movieId);
+        }
+        return characterRepo.findWithFilters(name, age, weight);
     }
 
     public Character save(Character character) {

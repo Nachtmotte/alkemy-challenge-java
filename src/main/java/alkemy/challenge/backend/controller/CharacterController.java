@@ -40,9 +40,13 @@ public class CharacterController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getCharacters() {
+    public ResponseEntity<Map<String, Object>> getCharacters(
+            @RequestParam(value = "name", required = false)String name,
+            @RequestParam(value = "age", required = false)Integer age,
+            @RequestParam(value = "weight", required = false)Integer weight,
+            @RequestParam(value = "movie", required = false)Long movieId) {
 
-        List<Character> characters = characterService.getAll();
+        List<Character> characters = characterService.getAll(name, age, weight, movieId);
         List<CharacterGetDetailedDto> charactersDto =
                 mapper.map(characters, new TypeToken<List<CharacterGetDetailedDto>>() {
                 }.getType());
