@@ -9,6 +9,7 @@ import alkemy.challenge.backend.service.MovieService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +61,8 @@ public class MovieController {
     public ResponseEntity<Map<String, Object>> createMovie(
             @Valid @RequestBody MoviePostDto requestMovie){
 
+        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
         Movie newMovie = mapper.map(requestMovie, Movie.class);
         newMovie = movieService.save(newMovie, requestMovie.getCharactersId(), requestMovie.getGenresId());
         MovieGetDetailedDto movieDto = mapper.map(newMovie, MovieGetDetailedDto.class);
@@ -89,6 +92,58 @@ public class MovieController {
             return ResponseEntityUtil.generateResponse(HttpStatus.BAD_REQUEST, "message", e.getMessage());
         }
         MovieGetDetailedDto movieDto = mapper.map(newMovieData, MovieGetDetailedDto.class);
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "movie", movieDto);
+    }
+
+    @PostMapping("/{movieId}/characters/{characterId}")
+    public ResponseEntity<Map<String, Object>> addCharacterToMovie(
+            @PathVariable("movieId") Long movieId,
+            @PathVariable("characterId") Long characterId){
+        return addOrRemoveCharacterToMovie(movieId, characterId, true);
+    }
+
+    @DeleteMapping("/{movieId}/characters/{characterId}")
+    public ResponseEntity<Map<String, Object>> removeCharacterToMovie(
+            @PathVariable("movieId") Long movieId,
+            @PathVariable("characterId") Long characterId){
+        return addOrRemoveCharacterToMovie(movieId, characterId, false);
+    }
+
+    private ResponseEntity<Map<String, Object>> addOrRemoveCharacterToMovie(Long movieId, Long characterId, boolean add){
+        Movie movie;
+        try{
+            movie = movieService.addOrRemoveCharacter(movieId, characterId, add);
+        }catch (IllegalArgumentException e){
+            return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND, "message", e.getMessage());
+        }
+        MovieGetDetailedDto movieDto = mapper.map(movie, MovieGetDetailedDto.class);
+
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "movie", movieDto);
+    }
+
+    @PostMapping("/{movieId}/genres/{genreId}")
+    public ResponseEntity<Map<String, Object>> addGenreToMovie(
+            @PathVariable("movieId") Long movieId,
+            @PathVariable("genreId") Long genreId){
+        return addOrRemoveGenreToMovie(movieId, genreId, true);
+    }
+
+    @DeleteMapping("/{movieId}/genres/{genreId}")
+    public ResponseEntity<Map<String, Object>> removeGenreToMovie(
+            @PathVariable("movieId") Long movieId,
+            @PathVariable("genreId") Long genreId){
+        return addOrRemoveGenreToMovie(movieId, genreId, false);
+    }
+
+    private ResponseEntity<Map<String, Object>> addOrRemoveGenreToMovie(Long movieId, Long genreId, boolean add){
+        Movie movie;
+        try{
+            movie = movieService.addOrRemoveGenre(movieId, genreId, add);
+        }catch (IllegalArgumentException e){
+            return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND, "message", e.getMessage());
+        }
+        MovieGetDetailedDto movieDto = mapper.map(movie, MovieGetDetailedDto.class);
+
         return ResponseEntityUtil.generateResponse(HttpStatus.OK, "movie", movieDto);
     }
 }

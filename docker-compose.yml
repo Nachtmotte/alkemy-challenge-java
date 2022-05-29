@@ -1,6 +1,20 @@
 version: "3.8"
 
 services:
+  disneyworldbackend:
+    image: 'disney-world-backend-docker:latest'
+    build:
+      context: .
+    container_name: disneyworldbackend
+    depends_on:
+      - disneyworlddb
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://disneyworlddb:${DB_PORT:-5432}/${DB_NAME:-disneyworlddb}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER:-root}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASS:-root}
+    ports:
+      - ${APP_PORT:-8080:8080}
+
   disneyworlddb:
     image: postgres
     container_name: disneyworlddb

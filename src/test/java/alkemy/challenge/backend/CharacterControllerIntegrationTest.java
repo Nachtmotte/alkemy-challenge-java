@@ -96,9 +96,6 @@ public class CharacterControllerIntegrationTest extends ContainersEnvironment {
         result.andExpect(jsonPath("$.characters", hasSize(1)));
         result.andExpect(jsonPath("$.characters[0].name", is(testCharacter.getName())));
         result.andExpect(jsonPath("$.characters[0].imageUrl", is(testCharacter.getImageUrl())));
-        result.andExpect(jsonPath("$.characters[0].age", is(testCharacter.getAge())));
-        result.andExpect(jsonPath("$.characters[0].weight", is(testCharacter.getWeight())));
-        result.andExpect(jsonPath("$.characters[0].story", is(testCharacter.getStory())));
     }
 
     // -----------------------------------------------------

@@ -35,7 +35,12 @@ public class Movie {
     @Column(columnDefinition="SMALLINT")
     private Integer rating;
 
-    @ManyToMany(mappedBy = "movies")
+    @ManyToMany
+    @JoinTable(
+            name = "movie_character",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "character_id")
+    )
     private List<Character> characters = new ArrayList<>();
 
     @ManyToMany
@@ -45,11 +50,4 @@ public class Movie {
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     private List<Genre> genres = new ArrayList<>();
-
-    @PreRemove
-    private void removeMovieFromCharacters(){
-        for(Character c : characters){
-            c.getMovies().remove(this);
-        }
-    }
 }

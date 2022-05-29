@@ -33,18 +33,18 @@ public class MovieService {
 
     public List<Movie> getAll(String title, Long genreId, String order) {
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        if(title == null && genreId == null && order == null){
+        if (title == null && genreId == null && order == null) {
             return movieRepo.findAll(sort);
         }
-        if(order != null){
-            if(order.equals("ASC")){
+        if (order != null) {
+            if (order.equals("ASC")) {
                 sort = Sort.by(Sort.Direction.ASC, "createAt");
             }
-            if(order.equals("DESC")){
+            if (order.equals("DESC")) {
                 sort = Sort.by(Sort.Direction.DESC, "createAt");
             }
         }
-        if(genreId != null){
+        if (genreId != null) {
             return movieRepo.findAllWithAllFilters(title, genreId, sort);
         }
         return movieRepo.findAllWithFilters(title, sort);
@@ -105,10 +105,44 @@ public class MovieService {
 
         Integer newRating = newMovieData.getRating();
         if (newRating != null && !Objects.equals(newRating, movie.getRating())) {
-            if(newRating < 1 || newRating > 5){
-                throw new IllegalStateException("The Movie rating most be between 1 to 5");
+            if (newRating < 1 || newRating > 5) {
+                throw new IllegalStateException("The Movie rating must be between 1 to 5");
             }
             movie.setRating(newRating);
+        }
+
+        return movie;
+    }
+
+    @Transactional
+    public Movie addOrRemoveCharacter(Long movieId, Long characterId, boolean add) {
+        Movie movie = movieRepo.findById(movieId)
+                .orElseThrow(() -> new IllegalArgumentException(("Movie with id " + movieId + " does not exist")));
+
+        Character character = characterRepo.findById(characterId)
+                .orElseThrow(() -> new IllegalArgumentException("Character with id " + characterId + " does no exist"));
+
+        if (add) {
+            movie.getCharacters().add(character);
+        } else {
+            movie.getCharacters().remove(character);
+        }
+
+        return movie;
+    }
+
+    @Transactional
+    public Movie addOrRemoveGenre(Long movieId, Long genreId, boolean add) {
+        Movie movie = movieRepo.findById(movieId)
+                .orElseThrow(() -> new IllegalArgumentException(("Movie with id " + movieId + " does not exist")));
+
+        Genre genre = genreRepo.findById(genreId)
+                .orElseThrow(() -> new IllegalArgumentException("Genre with id " + genreId + " does no exist"));
+
+        if (add) {
+            movie.getGenres().add(genre);
+        } else {
+            movie.getGenres().remove(genre);
         }
 
         return movie;

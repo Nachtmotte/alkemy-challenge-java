@@ -35,11 +35,13 @@ public class Character {
     @Column(columnDefinition="TEXT")
     private String story;
 
-    @ManyToMany
-    @JoinTable(
-            name = "character_movie",
-            joinColumns = @JoinColumn(name = "character_id"),
-            inverseJoinColumns = @JoinColumn(name = "movie_id")
-    )
+    @ManyToMany(mappedBy = "characters")
     private List<Movie> movies = new ArrayList<>();
+
+    @PreRemove
+    private void removeMovieFromCharacters(){
+        for(Movie m : movies){
+            m.getCharacters().remove(this);
+        }
+    }
 }
