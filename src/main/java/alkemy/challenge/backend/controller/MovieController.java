@@ -37,7 +37,9 @@ public class MovieController {
             return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND, "message", e.getMessage());
         }
 
-        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "movie", movie);
+        MovieGetDetailedDto movieDto = mapper.map(movie, MovieGetDetailedDto.class);
+
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "movie", movieDto);
     }
 
     @GetMapping
@@ -59,7 +61,7 @@ public class MovieController {
             @Valid @RequestBody MoviePostDto requestMovie){
 
         Movie newMovie = mapper.map(requestMovie, Movie.class);
-        newMovie = movieService.save(newMovie, requestMovie.getCharactersId());
+        newMovie = movieService.save(newMovie, requestMovie.getCharactersId(), requestMovie.getGenresId());
         MovieGetDetailedDto movieDto = mapper.map(newMovie, MovieGetDetailedDto.class);
 
         return ResponseEntityUtil.generateResponse(HttpStatus.CREATED, "movie", movieDto);

@@ -1,8 +1,10 @@
 package alkemy.challenge.backend.service;
 
 import alkemy.challenge.backend.entity.Character;
+import alkemy.challenge.backend.entity.Genre;
 import alkemy.challenge.backend.entity.Movie;
 import alkemy.challenge.backend.repository.CharacterRepository;
+import alkemy.challenge.backend.repository.GenreRepository;
 import alkemy.challenge.backend.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -22,16 +24,18 @@ public class MovieService {
 
     private final CharacterRepository characterRepo;
 
+    private final GenreRepository genreRepo;
+
     public Movie get(Long movieId) {
         return movieRepo.findById(movieId)
                 .orElseThrow(() -> new IllegalArgumentException(("Movie with id " + movieId + " does not exist")));
     }
 
     public List<Movie> getAll(String title, Long genreId, String order) {
-        if(title == null && genreId == null && order == null){
-            return movieRepo.findAll();
-        }
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        if(title == null && genreId == null && order == null){
+            return movieRepo.findAll(sort);
+        }
         if(order != null){
             if(order.equals("ASC")){
                 sort = Sort.by(Sort.Direction.ASC, "createAt");
@@ -46,11 +50,17 @@ public class MovieService {
         return movieRepo.findAllWithFilters(title, sort);
     }
 
-    public Movie save(Movie movie, List<Long> charactersId) {
+    public Movie save(Movie movie, List<Long> charactersId, List<Long> genresId) {
         if (charactersId != null && !charactersId.isEmpty()) {
             List<Character> characters = characterRepo.findAllById(charactersId);
             for (Character c : characters) {
                 movie.getCharacters().add(c);
+            }
+        }
+        if (genresId != null && !genresId.isEmpty()) {
+            List<Genre> genres = genreRepo.findAllById(genresId);
+            for (Genre g : genres) {
+                movie.getGenres().add(g);
             }
         }
         return movieRepo.save(movie);

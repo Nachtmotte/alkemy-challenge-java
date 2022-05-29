@@ -37,7 +37,9 @@ public class CharacterController {
             return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND, "message", e.getMessage());
         }
 
-        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "character", character);
+        CharacterGetDetailedDto characterDto = mapper.map(character, CharacterGetDetailedDto.class);
+
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "character", characterDto);
     }
 
     @GetMapping

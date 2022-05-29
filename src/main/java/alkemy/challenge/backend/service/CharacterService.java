@@ -4,6 +4,7 @@ import alkemy.challenge.backend.entity.Character;
 import alkemy.challenge.backend.repository.CharacterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,13 +23,14 @@ public class CharacterService {
     }
 
     public List<Character> getAll(String name, Integer age, Integer weight, Long movieId) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
         if(name == null && age == null && weight == null && movieId == null){
-            return characterRepo.findAll();
+            return characterRepo.findAll(sort);
         }
         if(movieId != null){
-            return characterRepo.findAllWithFilters(name, age, weight, movieId);
+            return characterRepo.findAllWithFilters(name, age, weight, movieId, sort);
         }
-        return characterRepo.findWithFilters(name, age, weight);
+        return characterRepo.findWithFilters(name, age, weight, sort);
     }
 
     public Character save(Character character) {

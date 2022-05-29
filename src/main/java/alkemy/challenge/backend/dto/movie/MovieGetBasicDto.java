@@ -13,5 +13,5 @@ public class MovieGetBasicDto {
 
     private String imageUrl;
 
-    private LocalDate createAt;
+    private LocalDate createdAt;
 }

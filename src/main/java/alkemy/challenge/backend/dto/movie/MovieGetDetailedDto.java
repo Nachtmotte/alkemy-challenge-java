@@ -4,7 +4,6 @@ import alkemy.challenge.backend.dto.character.CharacterGetBasicDto;
 import alkemy.challenge.backend.dto.genre.GenreGetBasicDto;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Data

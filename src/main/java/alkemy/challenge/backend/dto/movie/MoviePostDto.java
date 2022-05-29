@@ -22,4 +22,6 @@ public class MoviePostDto {
     private String rating;
 
     private List<Long> charactersId;
+
+    private List<Long> genresId;
 }
