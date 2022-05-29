@@ -37,10 +37,10 @@ public class MovieService {
             return movieRepo.findAll(sort);
         }
         if (order != null) {
-            if (order.equals("ASC")) {
+            if (order.equalsIgnoreCase("ASC")) {
                 sort = Sort.by(Sort.Direction.ASC, "createAt");
             }
-            if (order.equals("DESC")) {
+            if (order.equalsIgnoreCase("DESC")) {
                 sort = Sort.by(Sort.Direction.DESC, "createAt");
             }
         }

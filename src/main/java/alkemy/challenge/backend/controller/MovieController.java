@@ -46,7 +46,7 @@ public class MovieController {
     @GetMapping
     public ResponseEntity<Map<String, Object>> getMovies(
             @RequestParam(value = "title", required = false) String title,
-            @RequestParam(value = "genreId", required = false) Long genreId,
+            @RequestParam(value = "genre", required = false) Long genreId,
             @RequestParam(value = "order", required = false) String order) {
 
         List<Movie> movies = movieService.getAll(title, genreId, order);
