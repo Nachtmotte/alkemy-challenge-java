@@ -1,6 +1,7 @@
 package alkemy.challenge.backend.controller;
 
 import alkemy.challenge.backend.controller.util.ResponseEntityUtil;
+import alkemy.challenge.backend.dto.character.CharacterGetBasicDto;
 import alkemy.challenge.backend.dto.character.CharacterGetDetailedDto;
 import alkemy.challenge.backend.dto.character.CharacterPostDto;
 import alkemy.challenge.backend.entity.Character;
@@ -47,8 +48,8 @@ public class CharacterController {
             @RequestParam(value = "movie", required = false)Long movieId) {
 
         List<Character> characters = characterService.getAll(name, age, weight, movieId);
-        List<CharacterGetDetailedDto> charactersDto =
-                mapper.map(characters, new TypeToken<List<CharacterGetDetailedDto>>() {
+        List<CharacterGetBasicDto> charactersDto =
+                mapper.map(characters, new TypeToken<List<CharacterGetBasicDto>>() {
                 }.getType());
 
         return ResponseEntityUtil.generateResponse(HttpStatus.OK, "characters", charactersDto);

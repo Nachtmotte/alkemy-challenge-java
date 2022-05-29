@@ -2,6 +2,8 @@ package alkemy.challenge.backend.dto.movie;
 
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class MovieGetBasicDto {
 
@@ -10,4 +12,6 @@ public class MovieGetBasicDto {
     private String title;
 
     private String imageUrl;
+
+    private LocalDate createAt;
 }
