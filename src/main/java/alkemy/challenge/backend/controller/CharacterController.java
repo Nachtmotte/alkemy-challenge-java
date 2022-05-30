@@ -12,11 +12,15 @@ import org.modelmapper.TypeToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+
+import static alkemy.challenge.backend.entity.Roles.Constants.ROLE_ADMIN;
+import static alkemy.challenge.backend.entity.Roles.Constants.ROLE_USER;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +31,7 @@ public class CharacterController {
 
     private final ModelMapper mapper;
 
+    @Secured(ROLE_USER)
     @GetMapping("/{characterId}")
     public ResponseEntity<Map<String, Object>> getCharacter(@PathVariable("characterId") Long characterId) {
 
@@ -42,6 +47,7 @@ public class CharacterController {
         return ResponseEntityUtil.generateResponse(HttpStatus.OK, "character", characterDto);
     }
 
+    @Secured(ROLE_USER)
     @GetMapping
     public ResponseEntity<Map<String, Object>> getCharacters(
             @RequestParam(value = "name", required = false)String name,
@@ -57,6 +63,7 @@ public class CharacterController {
         return ResponseEntityUtil.generateResponse(HttpStatus.OK, "characters", charactersDto);
     }
 
+    @Secured(ROLE_ADMIN)
     @PostMapping
     public ResponseEntity<Map<String, Object>> createCharacter(
             @Valid @RequestBody CharacterPostDto requestCharacter) {
@@ -68,6 +75,7 @@ public class CharacterController {
         return ResponseEntityUtil.generateResponse(HttpStatus.CREATED, "character", characterDto);
     }
 
+    @Secured(ROLE_ADMIN)
     @DeleteMapping("/{characterId}")
     public ResponseEntity<Map<String, Object>> deleteCharacter(@PathVariable("characterId") Long characterId) {
         try {
@@ -78,6 +86,7 @@ public class CharacterController {
         return ResponseEntityUtil.generateResponse(HttpStatus.OK, "", null);
     }
 
+    @Secured(ROLE_ADMIN)
     @PatchMapping("/{characterId}")
     public ResponseEntity<Map<String, Object>> updateCharacter(
             @PathVariable("characterId") Long characterId,

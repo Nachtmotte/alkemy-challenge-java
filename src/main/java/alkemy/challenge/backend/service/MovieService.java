@@ -38,10 +38,10 @@ public class MovieService {
         }
         if (order != null) {
             if (order.equalsIgnoreCase("ASC")) {
-                sort = Sort.by(Sort.Direction.ASC, "createAt");
+                sort = Sort.by(Sort.Direction.ASC, "createdAt");
             }
             if (order.equalsIgnoreCase("DESC")) {
-                sort = Sort.by(Sort.Direction.DESC, "createAt");
+                sort = Sort.by(Sort.Direction.DESC, "createdAt");
             }
         }
         if (genreId != null) {

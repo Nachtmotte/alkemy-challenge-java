@@ -13,11 +13,15 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+
+import static alkemy.challenge.backend.entity.Roles.Constants.ROLE_ADMIN;
+import static alkemy.challenge.backend.entity.Roles.Constants.ROLE_USER;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,6 +32,7 @@ public class MovieController {
 
     private final ModelMapper mapper;
 
+    @Secured(ROLE_USER)
     @GetMapping("/{movieId}")
     public ResponseEntity<Map<String, Object>> getMovie(@PathVariable("movieId") Long movieId) {
 
@@ -43,6 +48,7 @@ public class MovieController {
         return ResponseEntityUtil.generateResponse(HttpStatus.OK, "movie", movieDto);
     }
 
+    @Secured(ROLE_USER)
     @GetMapping
     public ResponseEntity<Map<String, Object>> getMovies(
             @RequestParam(value = "title", required = false) String title,
@@ -57,6 +63,7 @@ public class MovieController {
         return ResponseEntityUtil.generateResponse(HttpStatus.OK, "movies", moviesDto);
     }
 
+    @Secured(ROLE_ADMIN)
     @PostMapping
     public ResponseEntity<Map<String, Object>> createMovie(
             @Valid @RequestBody MoviePostDto requestMovie){
@@ -70,6 +77,7 @@ public class MovieController {
         return ResponseEntityUtil.generateResponse(HttpStatus.CREATED, "movie", movieDto);
     }
 
+    @Secured(ROLE_ADMIN)
     @DeleteMapping("/{movieId}")
     public ResponseEntity<Map<String, Object>> deleteMovie(@PathVariable("movieId") Long movieId){
         try{
@@ -80,6 +88,7 @@ public class MovieController {
         return ResponseEntityUtil.generateResponse(HttpStatus.OK, "", null);
     }
 
+    @Secured(ROLE_ADMIN)
     @PatchMapping("/{movieId}")
     public ResponseEntity<Map<String, Object>> updateMovie(
             @PathVariable("movieId") Long movieId,
@@ -95,6 +104,7 @@ public class MovieController {
         return ResponseEntityUtil.generateResponse(HttpStatus.OK, "movie", movieDto);
     }
 
+    @Secured(ROLE_ADMIN)
     @PostMapping("/{movieId}/characters/{characterId}")
     public ResponseEntity<Map<String, Object>> addCharacterToMovie(
             @PathVariable("movieId") Long movieId,
@@ -102,6 +112,7 @@ public class MovieController {
         return addOrRemoveCharacterToMovie(movieId, characterId, true);
     }
 
+    @Secured(ROLE_ADMIN)
     @DeleteMapping("/{movieId}/characters/{characterId}")
     public ResponseEntity<Map<String, Object>> removeCharacterToMovie(
             @PathVariable("movieId") Long movieId,
@@ -121,6 +132,7 @@ public class MovieController {
         return ResponseEntityUtil.generateResponse(HttpStatus.OK, "movie", movieDto);
     }
 
+    @Secured(ROLE_ADMIN)
     @PostMapping("/{movieId}/genres/{genreId}")
     public ResponseEntity<Map<String, Object>> addGenreToMovie(
             @PathVariable("movieId") Long movieId,
@@ -128,6 +140,7 @@ public class MovieController {
         return addOrRemoveGenreToMovie(movieId, genreId, true);
     }
 
+    @Secured(ROLE_ADMIN)
     @DeleteMapping("/{movieId}/genres/{genreId}")
     public ResponseEntity<Map<String, Object>> removeGenreToMovie(
             @PathVariable("movieId") Long movieId,

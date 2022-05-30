@@ -12,9 +12,10 @@ import java.util.List;
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long> {
 
-    @Query("from Movie m where (:title is null or m.title = :title)")
+    @Query("from Movie m where (:title is null or lower(m.title) like lower(concat('%', :title, '%')))")
     List<Movie> findAllWithFilters(@Param("title") String title, Sort sort);
 
-    @Query("from Movie m left join m.genres g where (:genreId is null or g.id = :genreId) and (:title is null or m.title = :title)")
+    @Query("from Movie m left join m.genres g where (:genreId is null or g.id = :genreId)" +
+            "and (:title is null or lower(m.title) like lower(concat('%', :title, '%')))")
     List<Movie> findAllWithAllFilters(@Param("title") String title, @Param("genreId") Long genreId, Sort sort);
 }

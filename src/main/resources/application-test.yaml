@@ -13,7 +13,14 @@ spring:
     password: ${DB_PASSWORD}
 server:
   servlet:
-    context-path: /api/v0
+    context-path: /api/v1
   error:
     include-message: always
     include-stacktrace: never
+jwt:
+  secret: test
+  token:
+    issuer: testissuer
+    duration: 60
+    refresh:
+      duration: 240

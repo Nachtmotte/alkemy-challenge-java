@@ -3,7 +3,11 @@ package alkemy.challenge.backend;
 import alkemy.challenge.backend.config.ContainersEnvironment;
 import alkemy.challenge.backend.controller.CharacterController;
 import alkemy.challenge.backend.entity.Character;
+import alkemy.challenge.backend.entity.Role;
+import alkemy.challenge.backend.entity.User;
 import alkemy.challenge.backend.repository.CharacterRepository;
+import alkemy.challenge.backend.repository.UserRepository;
+import alkemy.challenge.backend.security.util.JwtService;
 import alkemy.challenge.backend.service.CharacterService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,9 +21,12 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.stream.Collectors;
+
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -27,6 +34,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = BackendApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CharacterControllerIntegrationTest extends ContainersEnvironment {
+
+    @Autowired
+    JwtService jwtService;
+
+    @Autowired
+    UserRepository userRepo;
 
     @Autowired
     CharacterRepository characterRepo;
@@ -47,9 +60,11 @@ public class CharacterControllerIntegrationTest extends ContainersEnvironment {
 
     private Character testCharacter;
 
+    private String testToken;
+
     @BeforeEach
     public void setup() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
         testCharacter = Character
                 .builder()
                 .name("test character")
@@ -59,6 +74,8 @@ public class CharacterControllerIntegrationTest extends ContainersEnvironment {
                 .story("a long text")
                 .build();
         testCharacter = characterRepo.save(testCharacter);
+        User testUser = userRepo.findByUsername("admin");
+        testToken = generateToken(testUser);
     }
 
     @AfterEach
@@ -71,7 +88,8 @@ public class CharacterControllerIntegrationTest extends ContainersEnvironment {
     // -----------------------------------------------------
     @Test
     public void givenValidCharacterId_whenGetRequest_thenShouldResponseOkWithTheCharacter() throws Exception {
-        ResultActions result = mockMvc.perform(get("/characters/" + testCharacter.getId()));
+        ResultActions result = mockMvc.perform(get("/characters/" + testCharacter.getId())
+                .header("Authorization", "Bearer " + testToken));
 
         result.andExpect(status().isOk());
         result.andExpect(jsonPath("$.character.name", is(testCharacter.getName())));
@@ -83,14 +101,16 @@ public class CharacterControllerIntegrationTest extends ContainersEnvironment {
 
     @Test
     public void givenInvalidCharacterId_whenGetRequest_thenShouldResponseNotFound() throws Exception {
-        ResultActions result = mockMvc.perform(get("/characters/" + (testCharacter.getId() + 1)));
+        ResultActions result = mockMvc.perform(get("/characters/" + (testCharacter.getId() + 1))
+                .header("Authorization", "Bearer " + testToken));
 
         result.andExpect(status().isNotFound());
     }
 
     @Test
     public void givenAValidPersistedCharacter_whenGetRequest_thenShouldResponseOkWithAListWithOneCharacter() throws Exception {
-        ResultActions result = mockMvc.perform(get("/characters"));
+        ResultActions result = mockMvc.perform(get("/characters")
+                .header("Authorization", "Bearer " + testToken));
 
         result.andExpect(status().isOk());
         result.andExpect(jsonPath("$.characters", hasSize(1)));
@@ -114,6 +134,7 @@ public class CharacterControllerIntegrationTest extends ContainersEnvironment {
                 "\"story\":\"" + newCharacter.getStory() + "\"}";
 
         ResultActions result = mockMvc.perform(post("/characters")
+                .header("Authorization", "Bearer " + testToken)
                 .content(newJsonCharacter)
                 .contentType(APPLICATION_JSON_VALUE));
 
@@ -137,6 +158,7 @@ public class CharacterControllerIntegrationTest extends ContainersEnvironment {
                 "\"story\":\"" + newCharacter.getStory() + "\"}";
 
         ResultActions result = mockMvc.perform(post("/characters")
+                .header("Authorization", "Bearer " + testToken)
                 .content(newJsonCharacter)
                 .contentType(APPLICATION_JSON_VALUE));
 
@@ -151,7 +173,8 @@ public class CharacterControllerIntegrationTest extends ContainersEnvironment {
     // -----------------------------------------------------
     @Test
     public void givenValidCharacterId_whenDeleteRequest_thenShouldResponseOk() throws Exception {
-        ResultActions result = mockMvc.perform(delete("/characters/" + testCharacter.getId()));
+        ResultActions result = mockMvc.perform(delete("/characters/" + testCharacter.getId())
+                .header("Authorization", "Bearer " + testToken));
 
         int charactersPersisted = (int) characterRepo.count();
         assertEquals(charactersPersisted, 0);
@@ -162,7 +185,8 @@ public class CharacterControllerIntegrationTest extends ContainersEnvironment {
     @Test
     public void givenInvalidCharacterId_whenDeleteRequest_thenShouldResponseNotFound() throws Exception {
         long invalidCharacterId = testCharacter.getId() + 1;
-        ResultActions result = mockMvc.perform(delete("/characters/" + invalidCharacterId));
+        ResultActions result = mockMvc.perform(delete("/characters/" + invalidCharacterId)
+                .header("Authorization", "Bearer " + testToken));
 
         int charactersPersisted = (int) characterRepo.count();
         assertEquals(charactersPersisted, 1);
@@ -182,6 +206,7 @@ public class CharacterControllerIntegrationTest extends ContainersEnvironment {
                 "\"age\":\"" + newAge + "\"}";
 
         ResultActions result = mockMvc.perform(patch("/characters/" + testCharacter.getId())
+                .header("Authorization", "Bearer " + testToken)
                 .content(newJsonData)
                 .contentType(APPLICATION_JSON_VALUE));
 
@@ -204,6 +229,7 @@ public class CharacterControllerIntegrationTest extends ContainersEnvironment {
                 "\"age\":\"" + newAge + "\"}";
 
         ResultActions result = mockMvc.perform(patch("/characters/" + (testCharacter.getId() + 1))
+                .header("Authorization", "Bearer " + testToken)
                 .content(newJsonData)
                 .contentType(APPLICATION_JSON_VALUE));
 
@@ -215,10 +241,19 @@ public class CharacterControllerIntegrationTest extends ContainersEnvironment {
         String newJsonData = "{}";
 
         ResultActions result = mockMvc.perform(patch("/characters/" + testCharacter.getId())
+                .header("Authorization", "Bearer " + testToken)
                 .content(newJsonData)
                 .contentType(APPLICATION_JSON_VALUE));
 
         result.andExpect(status().isBadRequest());
         result.andExpect(jsonPath("$.message", is("You must send a property to update")));
+    }
+
+    // -----------------------------------------------------
+    //                 -- Private Method
+    // -----------------------------------------------------
+    private String generateToken(User testUser) {
+        return jwtService.createAccessToken(testUser.getUsername(),
+                testUser.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
     }
 }
