@@ -64,6 +64,17 @@ public class UserController {
         return ResponseEntityUtil.generateResponse(HttpStatus.OK, "users", usersGetDto);
     }
 
+    @Secured(ROLE_ADMIN)
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable("userId") Long userId){
+        try{
+            userService.delete(userId);
+        }catch (IllegalArgumentException e){
+            return ResponseEntityUtil.generateResponse(HttpStatus.NOT_FOUND, "message", e.getMessage());
+        }
+        return ResponseEntityUtil.generateResponse(HttpStatus.OK, "", null);
+    }
+
     @GetMapping("/auth/refresh")
     public ResponseEntity<Map<String, Object>> refreshToken(HttpServletRequest request) {
 

@@ -29,6 +29,8 @@ public class UserService implements UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final EmailSenderService senderService;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepo.findByUsername(username);
@@ -44,7 +46,11 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role roleUser = roleRepo.findByName(Roles.ROLE_USER.name());
         user.getRoles().add(roleUser);
-        return userRepo.save(user);
+        User userPersisted = userRepo.save(user);
+        senderService.sendEmail(userPersisted.getEmail(),
+                "Welcome to Disney World Java",
+                "Hi, welcome to Disney World Java and thank you for using our web.");
+        return userPersisted;
     }
 
     public User getByUsername(String username){
