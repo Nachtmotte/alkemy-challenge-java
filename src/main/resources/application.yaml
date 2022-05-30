@@ -37,3 +37,5 @@ jwt: #jwt configuration
       duration: ${JWT_REFRESH_DURATION:240}
 email:
   username: ${EMAIL_USERNAME:alkemy.challenge.java.disney@gmail.com}
+  subject: 'Welcome to Disney World Java'
+  body: 'Hi, welcome to Disney World Java and thank you for using our web.'

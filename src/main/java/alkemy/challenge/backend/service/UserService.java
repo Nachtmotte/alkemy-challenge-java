@@ -6,6 +6,7 @@ import alkemy.challenge.backend.entity.User;
 import alkemy.challenge.backend.repository.RoleRepository;
 import alkemy.challenge.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +23,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
+    @Value("${email.subject}")
+    private String emailSubject;
+
+    @Value("${email.body}")
+    private String emailBody;
 
     private final UserRepository userRepo;
 
@@ -47,21 +53,19 @@ public class UserService implements UserDetailsService {
         Role roleUser = roleRepo.findByName(Roles.ROLE_USER.name());
         user.getRoles().add(roleUser);
         User userPersisted = userRepo.save(user);
-        senderService.sendEmail(userPersisted.getEmail(),
-                "Welcome to Disney World Java",
-                "Hi, welcome to Disney World Java and thank you for using our web.");
+        senderService.sendEmail(userPersisted.getEmail(), emailSubject, emailBody);
         return userPersisted;
     }
 
-    public User getByUsername(String username){
+    public User getByUsername(String username) {
         return userRepo.findByUsername(username);
     }
 
-    public List<User> getAll(){
+    public List<User> getAll() {
         return userRepo.findAll();
     }
 
-    public void delete(Long userId){
+    public void delete(Long userId) {
         try {
             userRepo.deleteById(userId);
         } catch (EmptyResultDataAccessException e) {
